@@ -1,6 +1,6 @@
 from fastapi import FastAPI
-import numpy as np
 import pandas as pd
+from sklearn.metrics.pairwise import cosine_similarity
 import joblib
 
 app = FastAPI()
@@ -105,32 +105,22 @@ def get_contents(rating):
 
     return {'rating': rating, 'contenido': count}
 
-@app.get('/get_recommendation/{movieId}')
-def get_recommendation(movieId, n_recommendations=5):
-    rating_1 = pd.read_csv('datasets/1.csv')
-    rating_4 = pd.read_csv('datasets/4.csv')
+@app.get('/get_recommendation/{title}')
+def get_recommendation(title):
+    data = pd.read_csv('datasets/datos_limpios.csv')
+    data = data.fillna(0)
+    data = data.astype(str)
+    data['title_description'] = data['title'] + data['description']
 
-    dataset = pd.concat([rating_1, rating_4])
-    dataset["rating"] = dataset['rating'].astype(float)
+    X = joblib.load('model.joblib')
 
-    movies = pd.read_csv('datasets/datos_limpios.csv')
-    matriz_usuario_pelicula = pd.pivot_table(data=dataset, values='rating', index='userId', columns='movieId')
+    similarity_matrix = cosine_similarity(X)
+    # Obtener la fila correspondiente a la película de entrada
+    movie_idx = data[data['title'] == title].index[0]
+    # Obtener la similitud de la película de entrada con todas las demás películas
+    movie_similarities = similarity_matrix[movie_idx]
+    # Ordenar las películas según su similitud con la película de entrada y devolver las 5 películas más similares
+    similar_movie_indices = movie_similarities.argsort()[::-1][1:6]
+    similar_movies = data.iloc[similar_movie_indices]['title'].tolist()
 
-    # llenar los valores faltantes con 0
-    matriz_usuario_pelicula.fillna(0, inplace=True)
-    
-    # encontrar el indice de la pelicula en la matriz
-    movie_index = matriz_usuario_pelicula.columns.get_loc(movieId)
-
-    # Cargar el modelo guardado
-    model = joblib.load('nombre_del_archivo.pkl')
-    # obtener las peliculas mas similares
-    distances, indices = model.kneighbors(matriz_usuario_pelicula.iloc[movie_index, :].values.reshape(1, -1), n_neighbors=n_recommendations+1)
-    
-    # convertir los movieId de los indices a títulos
-    recommendations = []
-    for index in indices.flatten()[1:]:
-        movieId = matriz_usuario_pelicula.columns[index]
-        movie_title = movies[movies['movieId'] == movieId]['title'].values[0]
-        recommendations.append(movie_title)
-    return recommendations
+    return similar_movies
