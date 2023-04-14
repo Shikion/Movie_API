@@ -4,6 +4,7 @@ colorama
 fastapi
 h11
 idna
+joblib
 numpy
 pandas
 pydantic
