@@ -112,8 +112,8 @@ def get_recommendation(title):
     data = data.astype(str)
     data['title_description'] = data['title'] + data['description']
 
-    X = joblib.load('model.joblib')
-
+    X = joblib.load('model.pkl')
+    
     similarity_matrix = cosine_similarity(X)
     # Obtener la fila correspondiente a la película de entrada
     movie_idx = data[data['title'] == title].index[0]
