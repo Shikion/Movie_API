@@ -113,8 +113,8 @@ def get_recommendation(title):
     data['title_description'] = data['title'] + data['description']
 
     X = joblib.load('model.pkl')
-    
     similarity_matrix = cosine_similarity(X)
+
     # Obtener la fila correspondiente a la película de entrada
     movie_idx = data[data['title'] == title].index[0]
     # Obtener la similitud de la película de entrada con todas las demás películas
@@ -123,4 +123,5 @@ def get_recommendation(title):
     similar_movie_indices = movie_similarities.argsort()[::-1][1:6]
     similar_movies = data.iloc[similar_movie_indices]['title'].tolist()
 
-    return similar_movies
+
+    return {'recomendacion':similar_movies}
