@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 import pandas as pd
-from sklearn.metrics.pairwise import cosine_similarity
+from sklearn.metrics import pairwise_distances
 import joblib
 
 app = FastAPI()
@@ -89,11 +89,14 @@ def get_actor(platform: str, year: int):
 def prod_per_county(type: str, country: str, year: int):
     data = pd.read_csv('datasets/datos_limpios.csv')
 
-    df_filtrado = data[(data['type'] == type) & (data['country'] == country) & (data["release_year"] == float(year))]
+    df_filtrado = data[(data['type'] == type) & (data['country'].str.contains(country)) & (data['release_year'] == year)]
     
-    count = len(df_filtrado)
+    df_filtrado['country'] = df_filtrado['country'].str.split(',')
+    df_filtrado = df_filtrado.explode('country')
     
-    return {'pais': country, 'anio': year, 'peliculas': count}
+    count = df_filtrado.groupby('country')['country'].count().to_dict()
+    
+    return {'paises': count, 'anio': year, 'peliculas': sum(count.values())}
 
 #Funcion que toma el rating del show y devuelve la cantidad de contenido que posee ese rating
 @app.get('/get_contents/{rating}')
@@ -112,12 +115,10 @@ def get_recommendation(title: str):
     X = joblib.load('model.pkl')
 
 
-    # Obtener la fila correspondiente a la película de entrada
     movie_idx = data[data['title'] == title].index[0]
-    # Obtener la similitud de la película de entrada con todas las demás películas
-    movie_similarities = X[movie_idx]
-    # Ordenar las películas según su similitud con la película de entrada y devolver las 5 películas más similares
-    similar_movie_indices = movie_similarities.argsort()[::-1][1:6]
+    similarities = pairwise_distances(X, X[movie_idx].reshape(1, -1))
+    similar_movie_indices = similarities.argsort(axis=0)[1:6].flatten()
     similar_movies = data.iloc[similar_movie_indices]['title'].tolist()
+    similar_movies_description = data.iloc[similar_movie_indices]['description'].tolist()
 
     return {"recomendacion": similar_movies}
