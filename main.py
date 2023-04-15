@@ -30,7 +30,7 @@ def get_max_duration(year: int, platform: str, duration_type: str):
 
 #Funcion para recibir todas las peliculas con puntuacion mayor a la indicada segun plataforma y año
 @app.get('/get_score_count/{platform}/{scored}/{year}')
-def get_score_count(platform, scored, year):
+def get_score_count(platform: str, scored: float, year: int):
     data = pd.read_csv('datasets/datos_limpios.csv')
 
     filtered_df = data[(data["platform"] == platform) & (data["release_year"] == float(year))]
@@ -47,7 +47,7 @@ def get_score_count(platform, scored, year):
 
 #Funcion que devuelve un int con el numero de peliculas segun su plataforma
 @app.get('/get_count_platform/{platform}')
-def get_count_platform(platform):
+def get_count_platform(platform: str):
     data = pd.read_csv('datasets/datos_limpios.csv')
 
     filtered_df = data[(data["platform"] == platform)]
@@ -57,7 +57,7 @@ def get_count_platform(platform):
 
 #Funcion que devuelve el actor que mas se repite filtrado por plataforma y año
 @app.get('/get_actor/{platform}/{year}')
-def get_actor(platform, year):
+def get_actor(platform: str, year: int):
     data = pd.read_csv('datasets/datos_limpios.csv')
 
     filtro = (data["platform"] == platform) & (data["release_year"] == float(year))
@@ -86,7 +86,7 @@ def get_actor(platform, year):
 #Funcion que toma un tipo de show, un pais y un año y devuelve la cantidad de producciones de ese año
 #en ese pais que sean de ese tipo
 @app.get('/prod_per_county/{type}/{country}/{year}')
-def prod_per_county(type,country,year):
+def prod_per_county(type: str, country: str, year: int):
     data = pd.read_csv('datasets/datos_limpios.csv')
 
     df_filtrado = data[(data['type'] == type) & (data['country'] == country) & (data["release_year"] == float(year))]
@@ -97,7 +97,7 @@ def prod_per_county(type,country,year):
 
 #Funcion que toma el rating del show y devuelve la cantidad de contenido que posee ese rating
 @app.get('/get_contents/{rating}')
-def get_contents(rating):
+def get_contents(rating: str):
     data = pd.read_csv('datasets/datos_limpios.csv')
 
     filtered_data = data[data['rating'] == rating]
@@ -106,7 +106,7 @@ def get_contents(rating):
     return {'rating': rating, 'contenido': count}
 
 @app.get('/get_recommendation/{title}')
-def get_recommendation(title):
+def get_recommendation(title: str):
     data = pd.read_csv('datasets/datos_limpios.csv')
     data = data.fillna(0)
     data = data.astype(str)
