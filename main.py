@@ -108,9 +108,6 @@ def get_contents(rating: str):
 @app.get('/get_recommendation/{title}')
 def get_recommendation(title: str):
     data = pd.read_csv('datasets/datos_limpios.csv')
-    data = data.fillna(0)
-    data = data.astype(str)
-    data['title_description'] = data['title'] + data['description']
 
     X = joblib.load('model.pkl')
     similarity_matrix = cosine_similarity(X)
@@ -124,4 +121,4 @@ def get_recommendation(title: str):
     similar_movies = data.iloc[similar_movie_indices]['title'].tolist()
 
 
-    return {'recomendacion':similar_movies}
+    return {"recomendacion": similar_movies}
