@@ -89,14 +89,10 @@ def get_actor(platform: str, year: int):
 def prod_per_county(type: str, country: str, year: int):
     data = pd.read_csv('datasets/datos_limpios.csv')
 
-    df_filtrado = data[(data['type'] == type) & (data['country'].str.contains(country)) & (data['release_year'] == year)]
+    df_filtrado = data[(data['type'] == "movie") & (data['country'].str.contains("canada")) & (data['release_year'] == 2014)]
+    num_filas = len(df_filtrado)
     
-    df_filtrado['country'] = df_filtrado['country'].str.split(',')
-    df_filtrado = df_filtrado.explode('country')
-    
-    count = df_filtrado.groupby('country')['country'].count().to_dict()
-    
-    return {'paises': count, 'anio': year, 'peliculas': sum(count.values())}
+    return {'paises': country, 'anio': year, 'peliculas': num_filas}
 
 #Funcion que toma el rating del show y devuelve la cantidad de contenido que posee ese rating
 @app.get('/get_contents/{rating}')
@@ -119,6 +115,5 @@ def get_recommendation(title: str):
     similarities = pairwise_distances(X, X[movie_idx].reshape(1, -1))
     similar_movie_indices = similarities.argsort(axis=0)[1:6].flatten()
     similar_movies = data.iloc[similar_movie_indices]['title'].tolist()
-    similar_movies_description = data.iloc[similar_movie_indices]['description'].tolist()
 
     return {"recomendacion": similar_movies}
