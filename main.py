@@ -89,7 +89,7 @@ def get_actor(platform: str, year: int):
 def prod_per_county(type: str, country: str, year: int):
     data = pd.read_csv('datasets/datos_limpios.csv')
 
-    df_filtrado = data[(data['type'] == "movie") & (data['country'].str.contains("canada")) & (data['release_year'] == 2014)]
+    df_filtrado = data[(data['type'] == type) & (data['country'].str.contains(country)) & (data['release_year'] == year)]
     num_filas = len(df_filtrado)
     
     return {'paises': country, 'anio': year, 'peliculas': num_filas}
