@@ -50,7 +50,7 @@ def get_score_count(platform: str, scored: float, year: int):
 def get_count_platform(platform: str):
     data = pd.read_csv('datasets/datos_limpios.csv')
 
-    filtered_df = data[(data["platform"] == platform)]
+    filtered_df = data[(data["platform"] == platform) & (data["type"] == "movie")]
     count = len(filtered_df)
 
     return {'plataforma': platform, 'peliculas': count}

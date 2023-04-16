@@ -45,19 +45,30 @@ En el analisis exploratorio de datos podemos buscar patrones en los datos, corre
 
 ![Tendencia de calificacion](src/calificaciones.png)
 
+
+
 - De este analisis tambien podemos encontrar las 10 peliculas mas vistas, y cuantos usuarios las han visto:
 
 ![Las 10 peliculas mas vistas](src/mas_vistos.jpg)
 
+
+
 - Aqui estan la la primer pelicula agregada en las plataformas, y las ultimas en agregarse:
 
-![antiguedad de las peliculas](src/antiguedad.jpg)
+![Antiguedad de las peliculas](src/antiguedad.jpg)
+
+
+
+- Tambien podemos ver como la cantidad de producciones aumenta a travez de los años
+
+![Cantidad de producciones por año](src/num_año.png)
 
 # Modelo de recomendacion
 
 Una vez tenemos todo preparado, podemos trabajar un modelo de recomendacion, en este caso usaremos un cosine_similarity y vectorizaremos las descripciones de las peliculas para si encontrar las mas similares entre si, asi tendremos la 7ma funcion, la cula tomara el titulo de una pelicula, y devolvera el titulos de las 5 peliculas mas similares.
 
-Para este trabajo, se propone trabajar con la vectorizacion de la descripccion de la pelicula, que junto a la "pairwise_distances" o distancia euclidiana, podemos descubrir cuales son las descripciones que mas relacion contienen, a su vez, debido al tamaño de la muestra, utilizaremos "randomized_svd" para formar una muestra mas manejable de manera aleatoria siguiendo una distrubicion sigma.
-Aqui podemos ver un ejemplo de como se mide la similitud entre peliculas, en este caso particular estamos buscando las peliculas que te sean similares a "cruella":
+Para este trabajo, se propone trabajar con la vectorizacion de la descripccion de la pelicula, que junto a la "pairwise_distances" o distancia euclidiana, podemos descubrir cuales son las descripciones que mas relacion contienen, a su vez, debido al tamaño de la muestra, utilizaremos "randomized_svd" para formar una muestra mas manejable de manera aleatoria.
+
+- Aqui podemos ver un ejemplo de como se mide la similitud entre peliculas, en este caso particular estamos buscando las peliculas que te sean similares a "cruella":
 
 ![Medicion de la similitud](src/simil_dist.jpg)
