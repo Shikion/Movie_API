@@ -13,16 +13,20 @@ def index():
 @app.get('/get_max_duration/{year}/{platform}/{duration_type}')
 def get_max_duration(year: int, platform: str, duration_type: str):
     data = pd.read_csv('datasets/datos_limpios.csv')
+    #Filtramos para obtener solo las peliculas
     movies = data[data['type'] == 'movie']
 
+    #Luego filtramos en base a los imputs deceados
     movies = movies[movies['release_year'] == year]
     movies = movies[movies['platform'] == platform]
 
+    #Advertimos que la duracion solo puede ser "min"
     if duration_type == 'min':
         movies = movies[movies['duration_type'].str.contains('min')]
     elif duration_type == 'season':
         return "Intente ingresando 'min'"
-
+    
+    #Ordenamos segun la duraccion y seleccionamos la de mayor duracion
     movies = movies.sort_values(by='duration_int', ascending=False)
     movie =  movies['title'].iloc[0]
 
@@ -33,9 +37,11 @@ def get_max_duration(year: int, platform: str, duration_type: str):
 def get_score_count(platform: str, scored: float, year: int):
     data = pd.read_csv('datasets/datos_limpios.csv')
 
-    filtered_df = data[(data["platform"] == platform) & (data["release_year"] == float(year))]
+    #Filtramos en base a los imputs deceados
+    filtered_df = data[(data["platform"] == platform) & (data["release_year"] == float(year)) & data[data['type'] == 'movie']]
     filtered_df = filtered_df[filtered_df["score"] > float(scored)]
 
+    #Contamos la cantidad de peliculas que posee una calificacion mayor a la dada
     count = len(filtered_df)
 
     return {
@@ -50,6 +56,7 @@ def get_score_count(platform: str, scored: float, year: int):
 def get_count_platform(platform: str):
     data = pd.read_csv('datasets/datos_limpios.csv')
 
+    #Filtramos las peliculas en base a su plataforma y contamos cuantas hay en total
     filtered_df = data[(data["platform"] == platform) & (data["type"] == "movie")]
     count = len(filtered_df)
 
@@ -60,9 +67,11 @@ def get_count_platform(platform: str):
 def get_actor(platform: str, year: int):
     data = pd.read_csv('datasets/datos_limpios.csv')
 
+    #Filtramos plataforma y año de lanzamiento
     filtro = (data["platform"] == platform) & (data["release_year"] == float(year))
     filtered_df = data[filtro]
 
+    #Separamos cada actor precente en "cast" y contamos cuanto aparece cada uno segun las peliculas filtradas
     actors_count = {}
     for cast in filtered_df["cast"]:
         if pd.notna(cast):
@@ -73,7 +82,8 @@ def get_actor(platform: str, year: int):
                     actors_count[actor] += 1
                 else:
                     actors_count[actor] = 1
-
+    
+    #Devolvemos el que haya aparecido mas veces
     max_actor = max(actors_count, key=actors_count.get)
 
     return {
@@ -89,6 +99,7 @@ def get_actor(platform: str, year: int):
 def prod_per_county(type: str, country: str, year: int):
     data = pd.read_csv('datasets/datos_limpios.csv')
 
+    #Filtramos segun los imputs requeridos y contamos la cantidad de shows que concuerdan con lo requerido
     df_filtrado = data[(data['type'] == type) & (data['country'].str.contains(country)) & (data['release_year'] == year)]
     num_filas = len(df_filtrado)
     
@@ -99,6 +110,7 @@ def prod_per_county(type: str, country: str, year: int):
 def get_contents(rating: str):
     data = pd.read_csv('datasets/datos_limpios.csv')
 
+    #Filtramos segun la calificacion etaria y devolvemos cuantos shows concuerdan con dicha calificacion
     filtered_data = data[data['rating'] == rating]
     count = len(filtered_data)
 
@@ -108,11 +120,16 @@ def get_contents(rating: str):
 def get_recommendation(title: str):
     data = pd.read_csv('datasets/datos_limpios.csv')
 
+    #importamos nuestro modelo de machine learning
     X = joblib.load('model.pkl')
 
-
+    #Buscamos el indice del show
     movie_idx = data[data['title'] == title].index[0]
+
+    #Aplicamos "pairwise_distance" junto a nuestro modelo para identificar las peliculas similares a la dada
     similarities = pairwise_distances(X, X[movie_idx].reshape(1, -1))
+    
+    #Ordenamos decrecientemente los resultados y luego buscamos su titulo
     similar_movie_indices = similarities.argsort(axis=0)[1:6].flatten()
     similar_movies = data.iloc[similar_movie_indices]['title'].tolist()
 
