@@ -5,14 +5,12 @@ import joblib
 
 app = FastAPI()
 
-@app.get("/")
-def index():
-    return "Hello World"
+data = pd.read_csv('datasets/datos_limpios.csv')
 
 #Funcion para encontrar la pelicula con mas duracion segun año, plataforma y duration_type
 @app.get('/get_max_duration/{year}/{platform}/{duration_type}')
 def get_max_duration(year: int, platform: str, duration_type: str):
-    data = pd.read_csv('datasets/datos_limpios.csv')
+    data = data
     #Filtramos para obtener solo las peliculas
     movies = data[data['type'] == 'movie']
 
@@ -35,7 +33,7 @@ def get_max_duration(year: int, platform: str, duration_type: str):
 #Funcion para recibir todas las peliculas con puntuacion mayor a la indicada segun plataforma y año
 @app.get('/get_score_count/{platform}/{scored}/{year}')
 def get_score_count(platform: str, scored: float, year: int):
-    data = pd.read_csv('datasets/datos_limpios.csv')
+    data = data
 
     #Filtramos en base a los imputs deceados
     filtered_df = data[(data["platform"] == platform) & (data["release_year"] == float(year)) & data[data['type'] == 'movie']]
@@ -54,7 +52,7 @@ def get_score_count(platform: str, scored: float, year: int):
 #Funcion que devuelve un int con el numero de peliculas segun su plataforma
 @app.get('/get_count_platform/{platform}')
 def get_count_platform(platform: str):
-    data = pd.read_csv('datasets/datos_limpios.csv')
+    data = data
 
     #Filtramos las peliculas en base a su plataforma y contamos cuantas hay en total
     filtered_df = data[(data["platform"] == platform) & (data["type"] == "movie")]
@@ -65,7 +63,7 @@ def get_count_platform(platform: str):
 #Funcion que devuelve el actor que mas se repite filtrado por plataforma y año
 @app.get('/get_actor/{platform}/{year}')
 def get_actor(platform: str, year: int):
-    data = pd.read_csv('datasets/datos_limpios.csv')
+    data = data
 
     #Filtramos plataforma y año de lanzamiento
     filtro = (data["platform"] == platform) & (data["release_year"] == float(year))
@@ -97,7 +95,7 @@ def get_actor(platform: str, year: int):
 #en ese pais que sean de ese tipo
 @app.get('/prod_per_county/{type}/{country}/{year}')
 def prod_per_county(type: str, country: str, year: int):
-    data = pd.read_csv('datasets/datos_limpios.csv')
+    data = data
 
     #Filtramos segun los imputs requeridos y contamos la cantidad de shows que concuerdan con lo requerido
     df_filtrado = data[(data['type'] == type) & (data['country'].str.contains(country)) & (data['release_year'] == year)]
@@ -108,7 +106,7 @@ def prod_per_county(type: str, country: str, year: int):
 #Funcion que toma el rating del show y devuelve la cantidad de contenido que posee ese rating
 @app.get('/get_contents/{rating}')
 def get_contents(rating: str):
-    data = pd.read_csv('datasets/datos_limpios.csv')
+    data = data
 
     #Filtramos segun la calificacion etaria y devolvemos cuantos shows concuerdan con dicha calificacion
     filtered_data = data[data['rating'] == rating]
@@ -118,8 +116,7 @@ def get_contents(rating: str):
 
 @app.get('/get_recommendation/{title}')
 def get_recommendation(title: str):
-    data = pd.read_csv('datasets/datos_limpios.csv')
-
+    data = data
     #importamos nuestro modelo de machine learning
     X = joblib.load('model.pkl')
 
