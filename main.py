@@ -36,7 +36,7 @@ def get_score_count(platform: str, scored: float, year: int):
     global data
 
     #Filtramos en base a los imputs deceados
-    filtered_df = data[(data["platform"] == platform) & (data["release_year"] == float(year)) & data[data['type'] == 'movie']]
+    filtered_df = data[(data["platform"] == platform) & (data["release_year"] == float(year)) & (data['type'] == 'movie')]
     filtered_df = filtered_df[filtered_df["score"] > float(scored)]
 
     #Contamos la cantidad de peliculas que posee una calificacion mayor a la dada
